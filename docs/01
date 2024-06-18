@@ -1,0 +1,73 @@
+python
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.action_chains import ActionChains
+import time
+
+# Configuração do WebDriver
+service = Service('caminho/para/o/chromedriver')
+driver = webdriver.Chrome(service=service)
+
+# Função para fazer login no Instagram
+def instagram_login(username, password):
+    driver.get('https://www.instagram.com/accounts/login/')
+    time.sleep(3)
+    
+    # Insira suas credenciais
+    user_input = driver.find_element(By.NAME, 'username')
+    user_input.send_keys(username)
+    
+    pass_input = driver.find_element(By.NAME, 'password')
+    pass_input.send_keys(password)
+    pass_input.send_keys(Keys.RETURN)
+    
+    time.sleep(5)  # Aguarde o login completar
+
+# Função para rolar a lista de seguidores
+def scroll_followers_popup():
+    # Acesse o perfil
+    driver.get('https://www.instagram.com/seu_perfil/')
+    time.sleep(3)
+    
+    # Clique no link de seguidores
+    followers_link = driver.find_element(By.PARTIAL_LINK_TEXT, 'seguidores')
+    followers_link.click()
+    time.sleep(3)
+    
+    # Localize o elemento do pop-up de seguidores
+    followers_popup = driver.find_element(By.XPATH, "//div[@role='dialog']//ul")
+    
+    # Role a lista
+    last_height = driver.execute_script("return arguments[0].scrollHeight", followers_popup)
+    while True:
+        driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", followers_popup)
+        time.sleep(2)  # Aguarde o carregamento
+        
+        new_height = driver.execute_script("return arguments[0].scrollHeight", followers_popup)
+        if new_height == last_height:
+            break
+        last_height = new_height
+
+# Use as funções
+try:
+    instagram_login('seu_usuario', 'sua_senha')
+    scroll_followers_popup()
+finally:
+    driver.quit()
+
+Explicação:
+
+    Configuração do WebDriver:
+        Configuramos o Chrome WebDriver e o serviço associado.
+
+    Função instagram_login:
+        Navegamos até a página de login do Instagram, inserimos as credenciais e fazemos login.
+
+    Função scroll_followers_popup:
+        Acessamos o perfil do usuário e clicamos no link de seguidores.
+        Localizamos o elemento do pop-up que contém a lista de seguidores.
+        Usamos JavaScript para rolar a lista de seguidores dentro do pop-up até o final. Isso é feito comparando a altura do scroll antes e depois da rolagem. Quando a altura não mudar, significa que todos os seguidores foram carregados.
+
