@@ -24,7 +24,7 @@ class HTMLAltSearcher:
 
 
 # Example usage
-html_file = './data/cd_007.html'
+html_file = './data/codigo_fonte_007.html'
 alt_searcher = HTMLAltSearcher(html_file)
 alt_occurrences = alt_searcher.search_alt_occurrences()
 print("Leads gerados:")
@@ -32,5 +32,7 @@ print(alt_occurrences)
 print(len(alt_occurrences))
 
 
-with open("./data/make_followers_007.py", "w", encoding="utf-8") as file:
+with open("make_followers_007.py", "w", encoding="utf-8") as file:
+    file.write("from make_finalize import finalize\n\n")
     file.write("followers = " + str(alt_occurrences))
+    file.write("\n\nfinalize(followers)")
